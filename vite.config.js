@@ -15,7 +15,7 @@ export default defineConfig({
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
         name: 'HungNguyen',
-        short_name: 'AppShortName',
+        short_name: 'HungNguyen',
         description: 'This is my Vite PWA Application',
         theme_color: '#ffffff',
         icons: [
