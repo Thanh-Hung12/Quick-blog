@@ -10,7 +10,7 @@ export default function Footer() {
           <img
             src="https://test-fe-blog-reactjs.vercel.app/assets/logo-lGLL0Zb0.png"
             alt="Logo"
-            className="h-8 w-auto"
+            className="h-12 w-12"
           />
           <p className="text-sm text-muted-foreground max-w-xs">
             Lorem ipsum dolor sit amet consectetur, adipisicing elit. Rerum unde

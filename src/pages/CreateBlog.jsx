@@ -3,17 +3,59 @@ import { Editor } from "@tinymce/tinymce-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import React from "react";
+import Upload from "@/components/Upload";
+import { createPost } from "@/services/api/blog";
 
 export default function CreateBlog() {
+  const [file, setFile] = useState(null);
   const [content, setContent] = useState("");
   const [tag, setTag] = useState("");
   const [tags, setTags] = useState([]);
+  const [title, setTitle] = useState("");
 
   const addTag = () => {
     if (tag.trim() !== "") {
       setTags([...tags, tag.trim()]);
       setTag("");
     }
+  };
+
+  const handleUploadFile = (file) => {
+    setFile(file);
+  };
+
+  const handleCreateBlog = async () => {
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", uploadPreset);
+
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const result = await res.json();
+    console.log(result.secure_url); // ==> URL ảnh
+    console.log("Title:", title);
+    console.log("Content:", content);
+    console.log("Tags:", tags);
+    // Gọi API tạo blog
+    const createResponse = await createPost({
+      title,
+      content,
+      tags,
+      image: result.secure_url,
+    });
+    console.log(createResponse);
+    //chuyển về trang home
+    window.location.href = "/";
   };
 
   return (
@@ -28,15 +70,18 @@ export default function CreateBlog() {
           {/* Upload Image */}
           <div>
             <label className="font-medium">Blog Image</label>
-            <div className="border border-dashed border-gray-300 rounded-md p-6 text-center cursor-pointer hover:bg-gray-50">
-              <span className="text-gray-500">⬆ Click to upload image</span>
-            </div>
+            <Upload onUpload={handleUploadFile} />
           </div>
 
           {/* Blog Title */}
           <div>
             <label className="font-medium">Blog Title</label>
-            <Input placeholder="Enter blog title" className="mt-2" />
+            <Input
+              onChange={(e) => setTitle(e.target.value)}
+              value={title}
+              placeholder="Enter blog title"
+              className="mt-2"
+            />
           </div>
 
           {/* TinyMCE Editor */}
@@ -44,6 +89,8 @@ export default function CreateBlog() {
             <label className="font-medium">Blog Content</label>
 
             <Editor
+              onEditorChange={(newValue, editor) => setContent(newValue)}
+              value={content}
               apiKey="lmxn7e8ttadccqyglpjdlf7vmfj63qosop55zztlit9p65wy"
               init={{
                 plugins: [
@@ -112,6 +159,7 @@ export default function CreateBlog() {
             <label className="font-medium">Blog Tag</label>
             <div className="flex items-center gap-3 mt-2">
               <Input
+                type="text"
                 placeholder="Enter blog tag"
                 value={tag}
                 onChange={(e) => setTag(e.target.value)}
@@ -122,19 +170,40 @@ export default function CreateBlog() {
             {/* Show Added Tags */}
             <div className="flex gap-2 flex-wrap mt-3">
               {tags.map((t, i) => (
-                <span
-                  key={i}
-                  className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm"
-                >
-                  #{t}
-                </span>
+                <div className="flex gap-2 bg-indigo-100 rounded-full text-sm items-center px-3 py-1  text-indigo-700">
+                  <span key={i} className=" ">
+                    {t}{" "}
+                  </span>
+                  <svg
+                    onClick={() => {
+                      const newTags = tags.filter((_, index) => index !== i);
+                      setTags(newTags);
+                    }}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-x cursor-pointer w-3 h-3"
+                  >
+                    <path d="M18 6l-12 12"></path>
+                    <path d="M6 6l12 12"></path>
+                  </svg>
+                </div>
               ))}
             </div>
           </div>
 
           {/* Create Blog Button */}
           <div className="flex justify-center mt-6">
-            <Button className="px-6 bg-indigo-600 text-white hover:bg-indigo-700">
+            <Button
+              onClick={handleCreateBlog}
+              className="px-6 bg-indigo-600 text-white hover:bg-indigo-700"
+            >
               Create Blog
             </Button>
           </div>

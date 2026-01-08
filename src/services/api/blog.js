@@ -12,3 +12,13 @@ export const fetchPostById = async (id) => {
   const response = await apiInstance.get(`/posts/${id}`);
   return response;
 };
+// gọi api tạo blog
+export const createPost = async (formData) => {
+  const response = await apiInstance.post('/posts', formData);
+  return response;
+};
+//chức năng delete
+export const deletePost = async (id) => {
+  const response = await apiInstance.delete(`/posts/${id}`);
+  return response;
+};

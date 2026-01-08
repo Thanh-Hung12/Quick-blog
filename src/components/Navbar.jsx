@@ -76,8 +76,18 @@ export default function Navbar() {
               <>
                 <DropdownMenuItem>
                   <Clipboard className="mr-2 h-4 w-4" />
-                  <span>My Posts</span>
+                  <Link to="/my-posts">
+                    <span>My Posts</span>
+                  </Link>
                 </DropdownMenuItem>
+                {role === "admin" && (
+                  <DropdownMenuItem>
+                    <Clipboard className="mr-2 h-4 w-4" />
+                    <Link to="/user-management">
+                      <span>User Management</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
                   onClick={() => {
                     localStorage.removeItem("me");

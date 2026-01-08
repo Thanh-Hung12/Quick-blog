@@ -37,6 +37,7 @@ const Home = () => {
       setFilters(listBlogs);
     }
   }, [filters, listBlogs]);
+
   return (
     <div>
       <HeroSection
